@@ -86,15 +86,6 @@ template <typename T> bool SX126xInterface<T>::init()
 
     RadioLibInterface::init();
 
-#ifdef IKOKA_STICK_0_3_0
-    pinMode(SX126X_BUSY, INPUT);
-    pinMode(SX126X_RESET, INPUT);
-    LOG_INFO("IKOKA SPI diag: CS=%d(D%d) DIO1=%d(D%d) RST=%d(D%d) BUSY=%d(D%d)", SX126X_CS, SX126X_CS, SX126X_DIO1,
-             SX126X_DIO1, SX126X_RESET, SX126X_RESET, SX126X_BUSY, SX126X_BUSY);
-    LOG_INFO("IKOKA pin state: BUSY=%d RST=%d (BUSY should be LOW after reset)", digitalRead(SX126X_BUSY),
-             digitalRead(SX126X_RESET));
-#endif
-
     limitPower(SX126X_MAX_POWER);
     // Make sure we reach the minimum power supported to turn the chip on (-9dBm)
     if (power < -9)
@@ -110,12 +101,6 @@ template <typename T> bool SX126xInterface<T>::init()
 #endif
     // \todo Display actual typename of the adapter, not just `SX126x`
     LOG_INFO("SX126x init result %d", res);
-#ifdef IKOKA_STICK_0_3_0
-    if (res != RADIOLIB_ERR_NONE) {
-        LOG_WARN("IKOKA post-init diag: BUSY=%d RST=%d (err=%d: %s)", digitalRead(SX126X_BUSY), digitalRead(SX126X_RESET), res,
-                 res == -2 ? "CHIP_NOT_FOUND" : res == -3 ? "SPI_CMD_FAILED" : "other");
-    }
-#endif
     if (res == RADIOLIB_ERR_CHIP_NOT_FOUND || res == RADIOLIB_ERR_SPI_CMD_FAILED)
         return false;
 
